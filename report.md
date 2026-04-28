@@ -2,7 +2,7 @@
 Francesco Benedetto and Cameron Hakenson
 
 ## ER Model
-- ![Hotel ER model](./images/hotel_chain_eer.drawio(1).png)
+- ![Hotel ER model](./images/eer_model.png)
 
 Changes since HW7:
 - Added a `service` table to store service type and amount in one place.
