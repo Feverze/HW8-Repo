@@ -2,14 +2,14 @@
 Francesco Benedetto and Cameron Hakenson
 
 ## ER Model
-- ER diagram: ![Hotel ER model](./images/relational_model(1)(1).png)
+- ![Hotel ER model](./images/hotel_chain_eer.drawio(1).png)
 
 Changes since HW7:
 - Added a `service` table to store service type and amount in one place.
 - Updated `service_charge` to reference `service(service_type)` instead of storing amount directly in each charge row.
 
 ## Relational Model
-- Relational model diagram: ![Hotel relational model](./images/relational_model(1)(1).png)
+- ![Hotel relational model](./images/relational_model.png)
 
 Changes since HW7:
 - Added relation `service(service_type, amount)`.
