@@ -64,4 +64,6 @@ ALTER TABLE bill
 
 ALTER TABLE service_charge
   ADD CONSTRAINT fk_service_charge_bill
-    FOREIGN KEY (bill_id) REFERENCES bill(bill_id);
+    FOREIGN KEY (bill_id) REFERENCES bill(bill_id),
+  ADD CONSTRAINT fk_service_charge_service
+    FOREIGN KEY (service_type) REFERENCES service(service_type);

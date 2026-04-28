@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS service_charge;
+DROP TABLE IF EXISTS service;
 DROP TABLE IF EXISTS bill;
 DROP TABLE IF EXISTS occupant;
 DROP TABLE IF EXISTS room_assignment;
@@ -135,10 +136,20 @@ CREATE TABLE bill (
   total NUMERIC(10,2) NOT NULL CHECK (total >= 0)
 );
 
+CREATE TABLE service (
+  service_type VARCHAR(80) PRIMARY KEY,
+  amount NUMERIC(10,2) NOT NULL CHECK (amount >= 0)
+);
+
 CREATE TABLE service_charge (
   charge_id INT PRIMARY KEY,
   bill_id INT NOT NULL,
   service_type VARCHAR(80) NOT NULL,
-  amount NUMERIC(10,2) NOT NULL CHECK (amount >= 0),
   charge_date DATE NOT NULL
 );
+
+CREATE INDEX idx_reservation_hotel_dates
+  ON reservation (hotel_id, check_in, check_out);
+
+CREATE INDEX idx_room_assignment_room_dates
+  ON room_assignment (hotel_id, room_number, start_date, end_date);

@@ -29,3 +29,4 @@ ALTER TABLE IF EXISTS occupant DROP CONSTRAINT IF EXISTS fk_occupant_assignment;
 ALTER TABLE IF EXISTS bill DROP CONSTRAINT IF EXISTS fk_bill_reservation;
 
 ALTER TABLE IF EXISTS service_charge DROP CONSTRAINT IF EXISTS fk_service_charge_bill;
+ALTER TABLE IF EXISTS service_charge DROP CONSTRAINT IF EXISTS fk_service_charge_service;

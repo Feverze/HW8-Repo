@@ -135,8 +135,81 @@ INSERT INTO bill (bill_id, reservation_id, bill_date, total) VALUES
 (7003,1007,'2026-01-14',620.00)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO service_charge (charge_id, bill_id, service_type, amount, charge_date) VALUES
-(8001,7001,'laundry',25.00,'2026-03-11'),
-(8002,7002,'spa',40.00,'2026-02-01'),
-(8003,7003,'airport_shuttle',60.00,'2026-01-13')
+INSERT INTO service (service_type, amount) VALUES
+('laundry',25.00),
+('spa',40.00),
+('airport_shuttle',60.00)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO service_charge (charge_id, bill_id, service_type, charge_date) VALUES
+(8001,7001,'laundry','2026-03-11'),
+(8002,7002,'spa','2026-02-01'),
+(8003,7003,'airport_shuttle','2026-01-13')
+ON CONFLICT DO NOTHING;
+
+-- Additional seed data to support HW8 query scenarios
+INSERT INTO guest_category (category_name, discount_pct) VALUES
+('vip', 0.20)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO guest (guest_id, name, id_type, id_number, address, home_phone, mobile_phone) VALUES
+(11,'Taylor Guest','passport','P10011','11 Main St','555-0011','555-1011')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO guest_cat_assign (guest_id, category_name) VALUES
+(11,'vip')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO room_type_feature (hotel_id, type_name, feature) VALUES
+(1,'double','city_view'),
+(1,'suite','balcony'),
+(2,'double','free_wifi'),
+(2,'double','breakfast_included'),
+(2,'suite','jacuzzi')
+ON CONFLICT DO NOTHING;
+
+-- Make one room type unavailable in Hotel A for 2026-07-15 to 2026-07-17
+INSERT INTO reservation (reservation_id, guest_id, hotel_id, check_in, check_out) VALUES
+(1013,4,1,'2026-07-15','2026-07-17')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO reserved_type (reservation_id, hotel_id, type_name, quantity) VALUES
+(1013,1,'suite',3)
+ON CONFLICT DO NOTHING;
+
+-- Existing reservation for Mrs. Smith used in check-in/check-out flows
+INSERT INTO reservation (reservation_id, guest_id, hotel_id, check_in, check_out) VALUES
+(1020,2,2,'2026-07-15','2026-07-17')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO reserved_type (reservation_id, hotel_id, type_name, quantity) VALUES
+(1020,2,'double',1)
+ON CONFLICT DO NOTHING;
+
+-- Another active reservation keeps one double occupied and unavailable
+INSERT INTO reservation (reservation_id, guest_id, hotel_id, check_in, check_out) VALUES
+(1021,6,2,'2026-07-14','2026-07-18')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO reserved_type (reservation_id, hotel_id, type_name, quantity) VALUES
+(1021,2,'double',1)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO room_assignment (assignment_id, reservation_id, hotel_id, room_number, start_date, end_date) VALUES
+(5201,1021,2,'101','2026-07-14','2026-07-18')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO occupant (occupant_id, assignment_id, name) VALUES
+(9201,5201,'Nina Rossi')
+ON CONFLICT DO NOTHING;
+
+-- Billing records across multiple hotels for yearly chain-spend query
+INSERT INTO bill (bill_id, reservation_id, bill_date, total) VALUES
+(7010,1001,'2026-07-17',380.00),
+(7011,1011,'2026-09-03',310.00)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO service_charge (charge_id, bill_id, service_type, charge_date) VALUES
+(8010,7010,'spa','2026-07-16'),
+(8011,7011,'laundry','2026-09-02')
 ON CONFLICT DO NOTHING;
