@@ -1,6 +1,3 @@
--- HW5 Hotel Database Seed Data
-
-
 INSERT INTO guest_category (category_name, discount_pct) VALUES
 ('gold', 0.15),
 ('silver', 0.07)

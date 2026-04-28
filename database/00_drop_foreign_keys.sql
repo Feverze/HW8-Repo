@@ -1,4 +1,3 @@
-
 ALTER TABLE IF EXISTS guest_cat_assign DROP CONSTRAINT IF EXISTS fk_guest_cat_assign_guest;
 ALTER TABLE IF EXISTS guest_cat_assign DROP CONSTRAINT IF EXISTS fk_guest_cat_assign_category;
 

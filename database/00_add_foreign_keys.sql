@@ -1,5 +1,3 @@
-
-
 ALTER TABLE guest_cat_assign
   ADD CONSTRAINT fk_guest_cat_assign_guest
     FOREIGN KEY (guest_id) REFERENCES guest(guest_id),

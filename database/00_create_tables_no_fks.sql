@@ -1,5 +1,3 @@
-
-
 DROP TABLE IF EXISTS service_charge;
 DROP TABLE IF EXISTS bill;
 DROP TABLE IF EXISTS occupant;
