@@ -24,25 +24,25 @@ INSERT INTO season (hotel_id, season_name, start_date, end_date) VALUES
 (5, 'summer_special', '2026-06-01', '2026-08-31')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO room_type (hotel_id, type_name, capacity) VALUES
-(1, 'double', 2), (1, 'suite', 4),
-(2, 'double', 2), (2, 'suite', 4),
-(3, 'double', 2), (3, 'suite', 4),
-(4, 'double', 2), (4, 'suite', 4),
-(5, 'double', 2), (5, 'suite', 4)
+INSERT INTO room_type (hotel_id, type_name, capacity, size_sqm) VALUES
+(1, 'double', 2, 25.00), (1, 'suite', 4, 50.00),
+(2, 'double', 2, 24.50), (2, 'suite', 4, 52.00),
+(3, 'double', 2, 26.00), (3, 'suite', 4, 48.00),
+(4, 'double', 2, 25.50), (4, 'suite', 4, 51.00),
+(5, 'double', 2, 27.00), (5, 'suite', 4, 49.00)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO rooms (hotel_id, room_number, is_clean, type_name) VALUES
-(1,'101',true,'double'), (1,'102',true,'double'), (1,'103',true,'double'),
-(1,'201',true,'suite'),  (1,'202',true,'suite'),  (1,'203',true,'suite'),
-(2,'101',true,'double'), (2,'102',true,'double'), (2,'103',true,'double'),
-(2,'201',true,'suite'),  (2,'202',true,'suite'),  (2,'203',true,'suite'),
-(3,'101',true,'double'), (3,'102',true,'double'), (3,'103',true,'double'),
-(3,'201',true,'suite'),  (3,'202',true,'suite'),  (3,'203',true,'suite'),
-(4,'101',true,'double'), (4,'102',true,'double'), (4,'103',true,'double'),
-(4,'201',true,'suite'),  (4,'202',true,'suite'),  (4,'203',true,'suite'),
-(5,'101',true,'double'), (5,'102',true,'double'), (5,'103',true,'double'),
-(5,'201',true,'suite'),  (5,'202',true,'suite'),  (5,'203',true,'suite')
+INSERT INTO rooms (hotel_id, room_number, is_clean, type_name, floor) VALUES
+(1,'101',true,'double',1), (1,'102',true,'double',1), (1,'103',true,'double',1),
+(1,'201',true,'suite',2),  (1,'202',true,'suite',2),  (1,'203',true,'suite',2),
+(2,'101',true,'double',1), (2,'102',true,'double',1), (2,'103',true,'double',1),
+(2,'201',true,'suite',2),  (2,'202',true,'suite',2),  (2,'203',true,'suite',2),
+(3,'101',true,'double',1), (3,'102',true,'double',1), (3,'103',true,'double',1),
+(3,'201',true,'suite',2),  (3,'202',true,'suite',2),  (3,'203',true,'suite',2),
+(4,'101',true,'double',1), (4,'102',true,'double',1), (4,'103',true,'double',1),
+(4,'201',true,'suite',2),  (4,'202',true,'suite',2),  (4,'203',true,'suite',2),
+(5,'101',true,'double',1), (5,'102',true,'double',1), (5,'103',true,'double',1),
+(5,'201',true,'suite',2),  (5,'202',true,'suite',2),  (5,'203',true,'suite',2)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO price (hotel_id, type_name, season_name, day_of_week, amount)

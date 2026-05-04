@@ -60,6 +60,7 @@ CREATE TABLE room_type (
   hotel_id INT NOT NULL,
   type_name VARCHAR(40) NOT NULL,
   capacity INT NOT NULL CHECK (capacity > 0),
+  size_sqm NUMERIC(6,2) CHECK (size_sqm > 0),
   PRIMARY KEY (hotel_id, type_name)
 );
 
@@ -77,6 +78,7 @@ CREATE TABLE rooms (
   room_number VARCHAR(20) NOT NULL,
   is_clean BOOLEAN NOT NULL DEFAULT TRUE,
   type_name VARCHAR(40) NOT NULL,
+  floor INT NOT NULL,
   PRIMARY KEY (hotel_id, room_number)
 );
 

@@ -1,196 +1,36 @@
 # CS374 Hotel Database HW8 Report
 Francesco Benedetto and Cameron Hakenson
 
-## ER Model (Chen-style)
+## ER Model
 
-```mermaid
-flowchart TD
-    classDef entity fill:#cdebca,stroke:#1f4e1a,stroke-width:1.5px,color:#000,font-weight:bold
-    classDef rel    fill:#fff5cc,stroke:#1f4e1a,stroke-width:1.2px,color:#000
-    classDef attr   fill:#e8f5e7,stroke:#1f4e1a,color:#000
-    classDef pk     fill:#e8f5e7,stroke:#1f4e1a,color:#000,text-decoration:underline,font-weight:bold
+![Hotel EER model](./images/eer_finished.drawio.png)
 
-    %% =========================================================
-    %% HOTEL and its multivalued attributes
-    %% =========================================================
-    HOTEL[HOTEL]:::entity
-    h_id((hotel_id)):::pk --- HOTEL
-    h_name((name)):::attr --- HOTEL
-    h_street((street)):::attr --- HOTEL
-
-    HOTEL_PHONE[HOTEL_PHONE]:::entity
-    hp_hid((hotel_id)):::pk --- HOTEL_PHONE
-    hp_phone((phone)):::pk --- HOTEL_PHONE
-    R_H_HAS_PH{has}:::rel
-    HOTEL ---|1| R_H_HAS_PH ---|M| HOTEL_PHONE
-
-    HOTEL_FEATURE[HOTEL_FEATURE]:::entity
-    hf_hid((hotel_id)):::pk --- HOTEL_FEATURE
-    hf_feat((feature)):::pk --- HOTEL_FEATURE
-    R_H_HAS_FT{has}:::rel
-    HOTEL ---|1| R_H_HAS_FT ---|M| HOTEL_FEATURE
-
-    %% =========================================================
-    %% GUEST and category assignment (M:N via associative entity)
-    %% =========================================================
-    GUEST[GUEST]:::entity
-    g_id((guest_id)):::pk --- GUEST
-    g_name((name)):::attr --- GUEST
-    g_idtype((id_type)):::attr --- GUEST
-    g_idnum((id_number)):::attr --- GUEST
-    g_addr((address)):::attr --- GUEST
-    g_home((home_phone)):::attr --- GUEST
-    g_mob((mobile_phone)):::attr --- GUEST
-
-    GUEST_CATEGORY[GUEST_CATEGORY]:::entity
-    gc_name((category_name)):::pk --- GUEST_CATEGORY
-    gc_disc((discount_pct)):::attr --- GUEST_CATEGORY
-
-    GUEST_CAT_ASSIGN[GUEST_CAT_ASSIGN]:::entity
-    gca_gid((guest_id)):::pk --- GUEST_CAT_ASSIGN
-    gca_cat((category_name)):::pk --- GUEST_CAT_ASSIGN
-    R_G_FOR{for}:::rel
-    GUEST ---|1| R_G_FOR ---|M| GUEST_CAT_ASSIGN
-    R_GC_OF{categorizes}:::rel
-    GUEST_CATEGORY ---|1| R_GC_OF ---|M| GUEST_CAT_ASSIGN
-
-    %% =========================================================
-    %% ROOM_TYPE, its features, and ROOMS
-    %% =========================================================
-    ROOM_TYPE[ROOM_TYPE]:::entity
-    rt_hid((hotel_id)):::pk --- ROOM_TYPE
-    rt_name((type_name)):::pk --- ROOM_TYPE
-    rt_cap((capacity)):::attr --- ROOM_TYPE
-    R_H_OFFERS{offers}:::rel
-    HOTEL ---|1| R_H_OFFERS ---|M| ROOM_TYPE
-
-    ROOM_TYPE_FEATURE[ROOM_TYPE_FEATURE]:::entity
-    rtf_hid((hotel_id)):::pk --- ROOM_TYPE_FEATURE
-    rtf_tn((type_name)):::pk --- ROOM_TYPE_FEATURE
-    rtf_feat((feature)):::pk --- ROOM_TYPE_FEATURE
-    R_RT_HAS{has}:::rel
-    ROOM_TYPE ---|1| R_RT_HAS ---|M| ROOM_TYPE_FEATURE
-
-    ROOMS[ROOMS]:::entity
-    r_hid((hotel_id)):::pk --- ROOMS
-    r_num((room_number)):::pk --- ROOMS
-    r_clean((is_clean)):::attr --- ROOMS
-    r_tn((type_name)):::attr --- ROOMS
-    R_H_CONT{contains}:::rel
-    HOTEL ---|1| R_H_CONT ---|M| ROOMS
-    R_RT_CLF{classifies}:::rel
-    ROOM_TYPE ---|1| R_RT_CLF ---|M| ROOMS
-
-    %% =========================================================
-    %% SEASON and PRICE
-    %% =========================================================
-    SEASON[SEASON]:::entity
-    s_hid((hotel_id)):::pk --- SEASON
-    s_name((season_name)):::pk --- SEASON
-    s_start((start_date)):::attr --- SEASON
-    s_end((end_date)):::attr --- SEASON
-    R_H_DEF{defines}:::rel
-    HOTEL ---|1| R_H_DEF ---|M| SEASON
-
-    PRICE[PRICE]:::entity
-    p_hid((hotel_id)):::pk --- PRICE
-    p_tn((type_name)):::pk --- PRICE
-    p_sn((season_name)):::pk --- PRICE
-    p_dow((day_of_week)):::pk --- PRICE
-    p_amt((amount)):::attr --- PRICE
-    R_RT_PRC{priced_as}:::rel
-    ROOM_TYPE ---|1| R_RT_PRC ---|M| PRICE
-    R_S_APPL{applied_in}:::rel
-    SEASON ---|1| R_S_APPL ---|M| PRICE
-
-    %% =========================================================
-    %% RESERVATION, RESERVED_TYPE, ROOM_ASSIGNMENT, OCCUPANT
-    %% =========================================================
-    RESERVATION[RESERVATION]:::entity
-    res_id((reservation_id)):::pk --- RESERVATION
-    res_gid((guest_id)):::attr --- RESERVATION
-    res_hid((hotel_id)):::attr --- RESERVATION
-    res_in((check_in)):::attr --- RESERVATION
-    res_out((check_out)):::attr --- RESERVATION
-    R_G_MAKES{makes}:::rel
-    GUEST ---|1| R_G_MAKES ---|M| RESERVATION
-    R_H_RECV{receives}:::rel
-    HOTEL ---|1| R_H_RECV ---|M| RESERVATION
-
-    RESERVED_TYPE[RESERVED_TYPE]:::entity
-    rty_rid((reservation_id)):::pk --- RESERVED_TYPE
-    rty_hid((hotel_id)):::pk --- RESERVED_TYPE
-    rty_tn((type_name)):::pk --- RESERVED_TYPE
-    rty_qty((quantity)):::attr --- RESERVED_TYPE
-    R_RES_REQ{requests}:::rel
-    RESERVATION ---|1| R_RES_REQ ---|M| RESERVED_TYPE
-    R_RT_ISOF{is_of}:::rel
-    ROOM_TYPE ---|1| R_RT_ISOF ---|M| RESERVED_TYPE
-
-    ROOM_ASSIGNMENT[ROOM_ASSIGNMENT]:::entity
-    ra_id((assignment_id)):::pk --- ROOM_ASSIGNMENT
-    ra_rid((reservation_id)):::attr --- ROOM_ASSIGNMENT
-    ra_hid((hotel_id)):::attr --- ROOM_ASSIGNMENT
-    ra_rn((room_number)):::attr --- ROOM_ASSIGNMENT
-    ra_st((start_date)):::attr --- ROOM_ASSIGNMENT
-    ra_en((end_date)):::attr --- ROOM_ASSIGNMENT
-    R_RES_ASGN{assigned_to}:::rel
-    RESERVATION ---|1| R_RES_ASGN ---|M| ROOM_ASSIGNMENT
-    R_R_USED{uses}:::rel
-    ROOMS ---|1| R_R_USED ---|M| ROOM_ASSIGNMENT
-
-    OCCUPANT[OCCUPANT]:::entity
-    o_id((occupant_id)):::pk --- OCCUPANT
-    o_aid((assignment_id)):::attr --- OCCUPANT
-    o_name((name)):::attr --- OCCUPANT
-    R_RA_INC{includes}:::rel
-    ROOM_ASSIGNMENT ---|1| R_RA_INC ---|M| OCCUPANT
-
-    %% =========================================================
-    %% BILL and SERVICE / SERVICE_CHARGE
-    %% =========================================================
-    BILL[BILL]:::entity
-    b_id((bill_id)):::pk --- BILL
-    b_rid((reservation_id)):::attr --- BILL
-    b_date((bill_date)):::attr --- BILL
-    b_total((total)):::attr --- BILL
-    R_RES_BILL{bills_for}:::rel
-    RESERVATION ---|1| R_RES_BILL ---|1| BILL
-
-    SERVICE[SERVICE]:::entity
-    svc_type((service_type)):::pk --- SERVICE
-    svc_amt((amount)):::attr --- SERVICE
-
-    SERVICE_CHARGE[SERVICE_CHARGE]:::entity
-    sc_id((charge_id)):::pk --- SERVICE_CHARGE
-    sc_bid((bill_id)):::attr --- SERVICE_CHARGE
-    sc_st((service_type)):::attr --- SERVICE_CHARGE
-    sc_date((charge_date)):::attr --- SERVICE_CHARGE
-    R_B_CHG{has_charges}:::rel
-    BILL ---|1| R_B_CHG ---|M| SERVICE_CHARGE
-    R_SVC_REF{referenced_by}:::rel
-    SERVICE ---|1| R_SVC_REF ---|M| SERVICE_CHARGE
-```
-
-Notation legend:
-- Rectangle = entity, diamond = relationship, oval = attribute, underlined oval = primary-key attribute.
-- Edge labels (`1`, `M`) give cardinality on each side of a relationship.
-- Composite primary keys are shown by underlining each component oval (e.g., `(hotel_id, room_number)` for `ROOMS`).
+Notation:
+- Rectangles are entities, diamonds are relationships, ovals are attributes, and underlined ovals are primary-key attributes.
+- Edge labels (`1`, `M`) give the cardinality on each side of a relationship.
+- Composite primary keys underline each component oval (e.g., `(hotel_id, room_number)` for `ROOMS`).
 - The `RESERVATION ─ bills_for ─ BILL` relationship is `1:1` to reflect the `UNIQUE` constraint on `bill.reservation_id`.
-
-Static export (HW7 Chen-style diagram, retained for reference):
-- ![Hotel ER model](./images/eer_model.png)
 
 Changes since HW7:
 - Added a `service` table to store service type and amount in one place.
 - Updated `service_charge` to reference `service(service_type)` instead of storing amount directly in each charge row.
-- Re-rendered the EER as a Mermaid Chen-style diagram (rectangles for entities, diamonds for relationships, ovals for attributes, underlined PK ovals, `1`/`M` cardinality on edges) so the diagram is text-versioned alongside the schema. Three issues from the original Chen-style PNG are corrected here: `SEASON.start_date` is now shown, the stray `GUEST./type` attribute is removed, and the missing `GUEST ─ makes ─ RESERVATION` relationship is now explicit.
+- Added `room_type.size_sqm NUMERIC(6,2)` and `rooms.floor INT` to satisfy the README data requirements (room types have a size in sq. meters; rooms have a floor distinct from the room number).
+- Corrected three issues from the original Chen-style draft: `SEASON.start_date` is now shown, the stray `GUEST./type` attribute is removed, and the previously missing `GUEST ─ makes ─ RESERVATION` relationship is now explicit.
 
 ## Relational Model
-- ![Hotel relational model](./images/relational_model.png)
+
+![Hotel relational model](./images/relational_finished.drawio.png)
+
+Verification against the SQL:
+- 18 tables — every column and datatype matches `database/00_create_tables_no_fks.sql`.
+- 21 foreign-key relationships — each one mirrors a constraint in `database/00_add_foreign_keys.sql`.
+- `BILL ─ billed_as ─ RESERVATION` is rendered as `1:1` to reflect the `UNIQUE` constraint on `bill.reservation_id`.
+- Composite primary keys are marked on every participating column (e.g., `PRICE` has four PK columns).
+- Columns that are simultaneously part of a primary key and a foreign key are flagged as both (e.g., `ROOM_TYPE_FEATURE.type_name`).
 
 Changes since HW7:
 - Added relation `service(service_type, amount)`.
+- Added `room_type.size_sqm` and `rooms.floor` columns (with seed data) to align with the README data requirements.
 - Preserved all existing table/file structure while extending billing-related schema.
 
 ## Database creation
