@@ -4,7 +4,7 @@ Francesco Benedetto and Cameron Hakenson
 ## ER Model (Chen-style)
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef entity fill:#cdebca,stroke:#1f4e1a,stroke-width:1.5px,color:#000,font-weight:bold
     classDef rel    fill:#fff5cc,stroke:#1f4e1a,stroke-width:1.2px,color:#000
     classDef attr   fill:#e8f5e7,stroke:#1f4e1a,color:#000
