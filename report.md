@@ -1,156 +1,182 @@
 # CS374 Hotel Database HW8 Report
 Francesco Benedetto and Cameron Hakenson
 
-## ER Model
+## ER Model (Chen-style)
 
 ```mermaid
-erDiagram
-    HOTEL {
-        int hotel_id PK
-        varchar name
-        varchar street
-    }
+flowchart LR
+    classDef entity fill:#cdebca,stroke:#1f4e1a,stroke-width:1.5px,color:#000,font-weight:bold
+    classDef rel    fill:#fff5cc,stroke:#1f4e1a,stroke-width:1.2px,color:#000
+    classDef attr   fill:#e8f5e7,stroke:#1f4e1a,color:#000
+    classDef pk     fill:#e8f5e7,stroke:#1f4e1a,color:#000,text-decoration:underline,font-weight:bold
 
-    HOTEL_PHONE {
-        int hotel_id PK, FK
-        varchar phone PK
-    }
+    %% =========================================================
+    %% HOTEL and its multivalued attributes
+    %% =========================================================
+    HOTEL[HOTEL]:::entity
+    h_id((hotel_id)):::pk --- HOTEL
+    h_name((name)):::attr --- HOTEL
+    h_street((street)):::attr --- HOTEL
 
-    HOTEL_FEATURE {
-        int hotel_id PK, FK
-        varchar feature PK
-    }
+    HOTEL_PHONE[HOTEL_PHONE]:::entity
+    hp_hid((hotel_id)):::pk --- HOTEL_PHONE
+    hp_phone((phone)):::pk --- HOTEL_PHONE
+    R_H_HAS_PH{has}:::rel
+    HOTEL ---|1| R_H_HAS_PH ---|M| HOTEL_PHONE
 
-    GUEST {
-        int guest_id PK
-        varchar name
-        varchar id_type
-        varchar id_number
-        varchar address
-        varchar home_phone
-        varchar mobile_phone
-    }
+    HOTEL_FEATURE[HOTEL_FEATURE]:::entity
+    hf_hid((hotel_id)):::pk --- HOTEL_FEATURE
+    hf_feat((feature)):::pk --- HOTEL_FEATURE
+    R_H_HAS_FT{has}:::rel
+    HOTEL ---|1| R_H_HAS_FT ---|M| HOTEL_FEATURE
 
-    GUEST_CATEGORY {
-        varchar category_name PK
-        numeric discount_pct
-    }
+    %% =========================================================
+    %% GUEST and category assignment (M:N via associative entity)
+    %% =========================================================
+    GUEST[GUEST]:::entity
+    g_id((guest_id)):::pk --- GUEST
+    g_name((name)):::attr --- GUEST
+    g_idtype((id_type)):::attr --- GUEST
+    g_idnum((id_number)):::attr --- GUEST
+    g_addr((address)):::attr --- GUEST
+    g_home((home_phone)):::attr --- GUEST
+    g_mob((mobile_phone)):::attr --- GUEST
 
-    GUEST_CAT_ASSIGN {
-        int guest_id PK, FK
-        varchar category_name PK, FK
-    }
+    GUEST_CATEGORY[GUEST_CATEGORY]:::entity
+    gc_name((category_name)):::pk --- GUEST_CATEGORY
+    gc_disc((discount_pct)):::attr --- GUEST_CATEGORY
 
-    ROOM_TYPE {
-        int hotel_id PK, FK
-        varchar type_name PK
-        int capacity
-    }
+    GUEST_CAT_ASSIGN[GUEST_CAT_ASSIGN]:::entity
+    gca_gid((guest_id)):::pk --- GUEST_CAT_ASSIGN
+    gca_cat((category_name)):::pk --- GUEST_CAT_ASSIGN
+    R_G_FOR{for}:::rel
+    GUEST ---|1| R_G_FOR ---|M| GUEST_CAT_ASSIGN
+    R_GC_OF{categorizes}:::rel
+    GUEST_CATEGORY ---|1| R_GC_OF ---|M| GUEST_CAT_ASSIGN
 
-    ROOM_TYPE_FEATURE {
-        int hotel_id PK, FK
-        varchar type_name PK, FK
-        varchar feature PK
-    }
+    %% =========================================================
+    %% ROOM_TYPE, its features, and ROOMS
+    %% =========================================================
+    ROOM_TYPE[ROOM_TYPE]:::entity
+    rt_hid((hotel_id)):::pk --- ROOM_TYPE
+    rt_name((type_name)):::pk --- ROOM_TYPE
+    rt_cap((capacity)):::attr --- ROOM_TYPE
+    R_H_OFFERS{offers}:::rel
+    HOTEL ---|1| R_H_OFFERS ---|M| ROOM_TYPE
 
-    ROOMS {
-        int hotel_id PK, FK
-        varchar room_number PK
-        boolean is_clean
-        varchar type_name FK
-    }
+    ROOM_TYPE_FEATURE[ROOM_TYPE_FEATURE]:::entity
+    rtf_hid((hotel_id)):::pk --- ROOM_TYPE_FEATURE
+    rtf_tn((type_name)):::pk --- ROOM_TYPE_FEATURE
+    rtf_feat((feature)):::pk --- ROOM_TYPE_FEATURE
+    R_RT_HAS{has}:::rel
+    ROOM_TYPE ---|1| R_RT_HAS ---|M| ROOM_TYPE_FEATURE
 
-    SEASON {
-        int hotel_id PK, FK
-        varchar season_name PK
-        date start_date
-        date end_date
-    }
+    ROOMS[ROOMS]:::entity
+    r_hid((hotel_id)):::pk --- ROOMS
+    r_num((room_number)):::pk --- ROOMS
+    r_clean((is_clean)):::attr --- ROOMS
+    r_tn((type_name)):::attr --- ROOMS
+    R_H_CONT{contains}:::rel
+    HOTEL ---|1| R_H_CONT ---|M| ROOMS
+    R_RT_CLF{classifies}:::rel
+    ROOM_TYPE ---|1| R_RT_CLF ---|M| ROOMS
 
-    PRICE {
-        int hotel_id PK, FK
-        varchar type_name PK, FK
-        varchar season_name PK, FK
-        varchar day_of_week PK
-        numeric amount
-    }
+    %% =========================================================
+    %% SEASON and PRICE
+    %% =========================================================
+    SEASON[SEASON]:::entity
+    s_hid((hotel_id)):::pk --- SEASON
+    s_name((season_name)):::pk --- SEASON
+    s_start((start_date)):::attr --- SEASON
+    s_end((end_date)):::attr --- SEASON
+    R_H_DEF{defines}:::rel
+    HOTEL ---|1| R_H_DEF ---|M| SEASON
 
-    RESERVATION {
-        int reservation_id PK
-        int guest_id FK
-        int hotel_id FK
-        date check_in
-        date check_out
-    }
+    PRICE[PRICE]:::entity
+    p_hid((hotel_id)):::pk --- PRICE
+    p_tn((type_name)):::pk --- PRICE
+    p_sn((season_name)):::pk --- PRICE
+    p_dow((day_of_week)):::pk --- PRICE
+    p_amt((amount)):::attr --- PRICE
+    R_RT_PRC{priced_as}:::rel
+    ROOM_TYPE ---|1| R_RT_PRC ---|M| PRICE
+    R_S_APPL{applied_in}:::rel
+    SEASON ---|1| R_S_APPL ---|M| PRICE
 
-    RESERVED_TYPE {
-        int reservation_id PK, FK
-        int hotel_id PK, FK
-        varchar type_name PK, FK
-        int quantity
-    }
+    %% =========================================================
+    %% RESERVATION, RESERVED_TYPE, ROOM_ASSIGNMENT, OCCUPANT
+    %% =========================================================
+    RESERVATION[RESERVATION]:::entity
+    res_id((reservation_id)):::pk --- RESERVATION
+    res_gid((guest_id)):::attr --- RESERVATION
+    res_hid((hotel_id)):::attr --- RESERVATION
+    res_in((check_in)):::attr --- RESERVATION
+    res_out((check_out)):::attr --- RESERVATION
+    R_G_MAKES{makes}:::rel
+    GUEST ---|1| R_G_MAKES ---|M| RESERVATION
+    R_H_RECV{receives}:::rel
+    HOTEL ---|1| R_H_RECV ---|M| RESERVATION
 
-    ROOM_ASSIGNMENT {
-        int assignment_id PK
-        int reservation_id FK
-        int hotel_id FK
-        varchar room_number FK
-        date start_date
-        date end_date
-    }
+    RESERVED_TYPE[RESERVED_TYPE]:::entity
+    rty_rid((reservation_id)):::pk --- RESERVED_TYPE
+    rty_hid((hotel_id)):::pk --- RESERVED_TYPE
+    rty_tn((type_name)):::pk --- RESERVED_TYPE
+    rty_qty((quantity)):::attr --- RESERVED_TYPE
+    R_RES_REQ{requests}:::rel
+    RESERVATION ---|1| R_RES_REQ ---|M| RESERVED_TYPE
+    R_RT_ISOF{is_of}:::rel
+    ROOM_TYPE ---|1| R_RT_ISOF ---|M| RESERVED_TYPE
 
-    OCCUPANT {
-        int occupant_id PK
-        int assignment_id FK
-        varchar name
-    }
+    ROOM_ASSIGNMENT[ROOM_ASSIGNMENT]:::entity
+    ra_id((assignment_id)):::pk --- ROOM_ASSIGNMENT
+    ra_rid((reservation_id)):::attr --- ROOM_ASSIGNMENT
+    ra_hid((hotel_id)):::attr --- ROOM_ASSIGNMENT
+    ra_rn((room_number)):::attr --- ROOM_ASSIGNMENT
+    ra_st((start_date)):::attr --- ROOM_ASSIGNMENT
+    ra_en((end_date)):::attr --- ROOM_ASSIGNMENT
+    R_RES_ASGN{assigned_to}:::rel
+    RESERVATION ---|1| R_RES_ASGN ---|M| ROOM_ASSIGNMENT
+    R_R_USED{uses}:::rel
+    ROOMS ---|1| R_R_USED ---|M| ROOM_ASSIGNMENT
 
-    BILL {
-        int bill_id PK
-        int reservation_id FK, UK
-        date bill_date
-        numeric total
-    }
+    OCCUPANT[OCCUPANT]:::entity
+    o_id((occupant_id)):::pk --- OCCUPANT
+    o_aid((assignment_id)):::attr --- OCCUPANT
+    o_name((name)):::attr --- OCCUPANT
+    R_RA_INC{includes}:::rel
+    ROOM_ASSIGNMENT ---|1| R_RA_INC ---|M| OCCUPANT
 
-    SERVICE {
-        varchar service_type PK
-        numeric amount
-    }
+    %% =========================================================
+    %% BILL and SERVICE / SERVICE_CHARGE
+    %% =========================================================
+    BILL[BILL]:::entity
+    b_id((bill_id)):::pk --- BILL
+    b_rid((reservation_id)):::attr --- BILL
+    b_date((bill_date)):::attr --- BILL
+    b_total((total)):::attr --- BILL
+    R_RES_BILL{bills_for}:::rel
+    RESERVATION ---|1| R_RES_BILL ---|1| BILL
 
-    SERVICE_CHARGE {
-        int charge_id PK
-        int bill_id FK
-        varchar service_type FK
-        date charge_date
-    }
+    SERVICE[SERVICE]:::entity
+    svc_type((service_type)):::pk --- SERVICE
+    svc_amt((amount)):::attr --- SERVICE
 
-    HOTEL           ||--o{ HOTEL_PHONE       : "has"
-    HOTEL           ||--o{ HOTEL_FEATURE     : "has"
-    HOTEL           ||--o{ ROOM_TYPE         : "offers"
-    HOTEL           ||--o{ ROOMS             : "contains"
-    HOTEL           ||--o{ SEASON            : "defines"
-    HOTEL           ||--o{ RESERVATION       : "receives"
-
-    GUEST           ||--o{ GUEST_CAT_ASSIGN  : "assigned_in"
-    GUEST_CATEGORY  ||--o{ GUEST_CAT_ASSIGN  : "categorizes"
-    GUEST           ||--o{ RESERVATION       : "makes"
-
-    ROOM_TYPE       ||--o{ ROOMS             : "classifies"
-    ROOM_TYPE       ||--o{ ROOM_TYPE_FEATURE : "has"
-    ROOM_TYPE       ||--o{ PRICE             : "priced_as"
-    SEASON          ||--o{ PRICE             : "applied_in"
-
-    RESERVATION     ||--o{ RESERVED_TYPE     : "requests"
-    ROOM_TYPE       ||--o{ RESERVED_TYPE     : "is_of"
-
-    RESERVATION     ||--o{ ROOM_ASSIGNMENT   : "fulfilled_by"
-    ROOMS           ||--o{ ROOM_ASSIGNMENT   : "used_in"
-    ROOM_ASSIGNMENT ||--o{ OCCUPANT          : "includes"
-
-    RESERVATION     ||--o| BILL              : "billed_as"
-    BILL            ||--o{ SERVICE_CHARGE    : "has_charges"
-    SERVICE         ||--o{ SERVICE_CHARGE    : "referenced_by"
+    SERVICE_CHARGE[SERVICE_CHARGE]:::entity
+    sc_id((charge_id)):::pk --- SERVICE_CHARGE
+    sc_bid((bill_id)):::attr --- SERVICE_CHARGE
+    sc_st((service_type)):::attr --- SERVICE_CHARGE
+    sc_date((charge_date)):::attr --- SERVICE_CHARGE
+    R_B_CHG{has_charges}:::rel
+    BILL ---|1| R_B_CHG ---|M| SERVICE_CHARGE
+    R_SVC_REF{referenced_by}:::rel
+    SERVICE ---|1| R_SVC_REF ---|M| SERVICE_CHARGE
 ```
+
+Notation legend:
+- Rectangle = entity, diamond = relationship, oval = attribute, underlined oval = primary-key attribute.
+- Edge labels (`1`, `M`) give cardinality on each side of a relationship.
+- Composite primary keys are shown by underlining each component oval (e.g., `(hotel_id, room_number)` for `ROOMS`).
+- The `RESERVATION ─ bills_for ─ BILL` relationship is `1:1` to reflect the `UNIQUE` constraint on `bill.reservation_id`.
 
 Static export (HW7 Chen-style diagram, retained for reference):
 - ![Hotel ER model](./images/eer_model.png)
@@ -158,7 +184,7 @@ Static export (HW7 Chen-style diagram, retained for reference):
 Changes since HW7:
 - Added a `service` table to store service type and amount in one place.
 - Updated `service_charge` to reference `service(service_type)` instead of storing amount directly in each charge row.
-- Replaced the static EER export with a Mermaid `erDiagram` so the diagram is text-versioned alongside the schema. Three issues from the Chen-style PNG are corrected here: `SEASON.start_date` is now shown, the stray `GUEST./type` attribute is removed, and the missing `GUEST ─ makes ─ RESERVATION` relationship is now explicit.
+- Re-rendered the EER as a Mermaid Chen-style diagram (rectangles for entities, diamonds for relationships, ovals for attributes, underlined PK ovals, `1`/`M` cardinality on edges) so the diagram is text-versioned alongside the schema. Three issues from the original Chen-style PNG are corrected here: `SEASON.start_date` is now shown, the stray `GUEST./type` attribute is removed, and the missing `GUEST ─ makes ─ RESERVATION` relationship is now explicit.
 
 ## Relational Model
 - ![Hotel relational model](./images/relational_model.png)
