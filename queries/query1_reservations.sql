@@ -20,22 +20,23 @@ available AS (
   SELECT
     rt.hotel_id,
     rt.type_name,
-    COUNT(rm.room_number) AS total_rooms,
-    COALESCE(SUM(rv.quantity), 0) AS reserved_rooms
+    (SELECT COUNT(*)
+       FROM rooms rm
+       WHERE rm.hotel_id = rt.hotel_id
+         AND rm.type_name = rt.type_name) AS total_rooms,
+    COALESCE((
+      SELECT SUM(rv.quantity)
+        FROM reservation r
+        JOIN reserved_type rv
+          ON rv.reservation_id = r.reservation_id
+        WHERE r.hotel_id = rt.hotel_id
+          AND rv.hotel_id = rt.hotel_id
+          AND rv.type_name = rt.type_name
+          AND r.check_in < req.check_out
+          AND r.check_out > req.check_in
+    ), 0) AS reserved_rooms
   FROM room_type rt
   JOIN request req ON req.hotel_id = rt.hotel_id
-  JOIN rooms rm
-    ON rm.hotel_id = rt.hotel_id
-   AND rm.type_name = rt.type_name
-  LEFT JOIN reservation r
-    ON r.hotel_id = rt.hotel_id
-   AND r.check_in < req.check_out
-   AND r.check_out > req.check_in
-  LEFT JOIN reserved_type rv
-    ON rv.reservation_id = r.reservation_id
-   AND rv.hotel_id = rt.hotel_id
-   AND rv.type_name = rt.type_name
-  GROUP BY rt.hotel_id, rt.type_name
 ),
 nightly AS (
   SELECT

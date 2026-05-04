@@ -1,11 +1,5 @@
 # Hotel Database
 
-![Long exposure photo of hotel](./images/HotelMadison.jpg)
-<br><small>Image source:
-[hotelmadison.com](https://www.hotelmadison.com/)
-</small>
-
-
 ## Data Requirements
 
 The database for a hotel chain which has hotels all over the world.
